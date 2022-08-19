@@ -229,22 +229,21 @@ extern "C" {
 
 #if defined(BORINGSSL_IMPLEMENTATION)
 #define OPENSSL_EXPORT __attribute__((visibility("default")))
-#else
-#define OPENSSL_EXPORT
 #endif
 
 #endif  // defined(OPENSSL_WINDOWS)
 
 #else  // defined(BORINGSSL_SHARED_LIBRARY)
 
-#if defined(OPENSSL_WINDOWS)
-#define OPENSSL_EXPORT __declspec(dllexport)
-#else
+#if !defined(BORINGSSL_HIDE_STATIC_SYMBOLS) && !defined(OPENSSL_WINDOWS) && defined(BORINGSSL_IMPLEMENTATION)
 #define OPENSSL_EXPORT __attribute__((visibility("default")))
 #endif
 
 #endif  // defined(BORINGSSL_SHARED_LIBRARY)
 
+#if !defined(OPENSSL_EXPORT)
+#define OPENSSL_EXPORT
+#endif
 
 #if defined(__GNUC__) || defined(__clang__)
 // MinGW has two different printf implementations. Ensure the format macro

@@ -20,6 +20,14 @@ option(BUILD_LIBSSL "Build libssl for AWS-LC" ON)
 option(DISABLE_PERL "Disable Perl for AWS-LC" OFF)
 option(DISABLE_GO "Disable Go for AWS-LC" OFF)
 
+# Controls whether public symbols in static libraries have "hidden" or "default" visibility.
+# This option is OFF by default, and has no effect when BUILD_SHARED_LIBS is ON.
+# Turn this option ON if you are building these libraries statically,
+# and using them privately within your application or shared library.
+# This will prevent problems if an application ALSO loads
+# the system's default installation of libssl.so/libcrypto.so
+option(HIDE_STATIC_SYMBOLS "Hide all symbols when building static libraries" OFF)
+
 enable_language(C)
 
 # Tests and libssl both require the CXX language to be enabled. If a consumer
@@ -458,6 +466,10 @@ if(BUILD_SHARED_LIBS)
   set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
 elseif(NOT DEFINED CMAKE_POSITION_INDEPENDENT_CODE)
   set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
+endif()
+
+if(HIDE_STATIC_SYMBOLS)
+  add_definitions(-DBORINGSSL_HIDE_STATIC_SYMBOLS)
 endif()
 
 if(MSAN)
